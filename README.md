@@ -4,34 +4,20 @@
 快速复制一个目录下大量小文件到其他目录
 
 #### 软件架构
-软件架构说明
+复制的时候在目标目录建立一个临时文件夹。先将文件复制到临时文件夹中。当临时文件夹的文件数量大于
+一定数量的时候直接移动到目标目录中。复制的时候使用多线程复制。
 
 
 #### 安装教程
 
-1. xxxx
-2. xxxx
-3. xxxx
+直接将jar放到本地就好
 
 #### 使用说明
 
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 参与贡献
-
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+java -jar FastCopy src  dst [可选参数] 
+ (必须)src：源目录，必须是目录并可读
+ (必须)dst：目标目录，必须是目录并可写
+ [可选参数]：
+	-record 文件复制记录文件的位置，默认在目标目录
+	-threadnum 同时运行最大线程数量，默认为cpu核心数
+	-pageDirNum 每个分页文件夹最大文件数量，默认为5000
