@@ -40,25 +40,28 @@ public class FastCopy {
 				}else {
 					srcFiles = src.listFiles();
 				}
-				
-				System.out.println("源目录中共有" + srcFiles + "个文件");
-				for (int i = 0, k = 1; i < srcFiles.length; i += CopyConfig.getRun_number(), k++) {
+				String lastDir=null;
+				CopyConfig.setFileNum(srcFiles.length);
+				System.out.println("源目录中共有" + srcFiles.length + "个文件");
+				for (int i = 0, k = 1; i < srcFiles.length; i += CopyConfig.getPageDirNum(), k++) {
 					File f = new File(CopyConfig.getDstDir(), ".temp_file_copy_" + k);
+					lastDir=f.getAbsolutePath();
 					if (!f.exists()) {
 						System.out.println("创建临时文件夹："+f.getAbsolutePath());
 						f.mkdirs();
 					}
-					for (int j = i; j < i + 5000 && j < srcFiles.length; j++) {
+					for (int j = i; j < i +CopyConfig.getPageDirNum() && j < srcFiles.length; j++) {
 						System.out.println("分配复制文件线程"+srcFiles[j].getName());
 						CopyConfig.getFixedThreadPool().execute(
-								new CopyFile(srcFiles[j], CopyConfig.getDstDir(), srcFiles[j].getName(), call));
+								new CopyFile(srcFiles[j], f.getAbsolutePath(), srcFiles[j].getName(), call));
 					}
 				}
+				CopyConfig.setLastDir(lastDir);
+				
 				System.out.println("分配完成！");
 				
 			}
 		});
-		thread.setDaemon(true);
 		thread.start();
 	}
 	/*

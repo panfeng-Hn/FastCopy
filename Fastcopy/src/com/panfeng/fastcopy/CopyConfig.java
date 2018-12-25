@@ -28,6 +28,38 @@ public class CopyConfig {
 	private static boolean configLoadFlag = false;
 
 	private static boolean isReadRecordFile = false;
+	
+	private static String lastDir;
+	
+	private static int fileNum;
+	
+	
+	
+	
+
+	public static int getFileNum() {
+		return fileNum;
+	}
+
+
+
+	public static void setFileNum(int fileNum) {
+		CopyConfig.fileNum = fileNum;
+	}
+
+
+
+	public static String getLastDir() {
+		return lastDir;
+	}
+
+
+
+	public static void setLastDir(String lastDir) {
+		CopyConfig.lastDir = lastDir;
+	}
+
+
 
 	public static boolean isReadRecordFile() {
 		return isReadRecordFile;
@@ -100,75 +132,84 @@ public class CopyConfig {
 	}
 
 	public static void loadConfigFromCommond(final String[] args) {
-		if (configLoadFlag) {
-			return;
-		}
-
-		// 处理源目录和目标目录
 		try {
-			srcDir = args[1];
-		} catch (IndexOutOfBoundsException e) {
-			Service.PrintHelp();
-		}
-		try {
-			dstDir = args[2];
-		} catch (IndexOutOfBoundsException e) {
-			Service.PrintHelp();
-		}
-		// 处理其他参数
-		if (args.length < 3) {
-			return;
-		}
-
-		try {
-			String arg = args[3];
-			handleOtherParam(arg, 3, args);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(args[3] + "的值无效！");
-		} catch (NumberFormatException e) {
-			System.out.println(args[3] + "的值必须为有效数字！");
-		}
-
-		if (args.length < 4) {
-			return;
-		}
-		try {
-			String arg = args[4];
-			handleOtherParam(arg, 4, args);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(args[4] + "的值无效！");
-		} catch (NumberFormatException e) {
-			System.out.println(args[4] + "的值必须为有效数字！");
-		}
-		if (args.length < 5) {
-			return;
-		}
-
-		try {
-			String arg = args[5];
-			handleOtherParam(arg, 5, args);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(args[5] + "的值无效！");
-		} catch (NumberFormatException e) {
-			System.out.println(args[5] + "的值必须为有效数字！");
-		}
-		//记录文件
-		try {
-			File record=null;
-			if(recordFile==null) {
-				record=new File(getDstDir());
-			}else {
-				record=new File(recordFile);
+			if (configLoadFlag) {
+				return;
 			}
-			if(record.exists()) {
-				isReadRecordFile=true;
-			}else {
-				record.createNewFile();
+
+			// 处理源目录和目标目录
+			try {
+				srcDir = args[0];
+			} catch (IndexOutOfBoundsException e) {
+				Service.PrintHelp();
+				System.exit(0);
 			}
-		} catch (Exception e) {
-			isReadRecordFile=false;
+			try {
+				dstDir = args[1];
+			} catch (IndexOutOfBoundsException e) {
+				Service.PrintHelp();
+				System.exit(0);
+			}
+			// 处理其他参数
+			if (args.length < 3) {
+				return;
+			}
+
+			try {
+				String arg = args[2];
+				handleOtherParam(arg, 2, args);
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println(args[2] + "的值无效！");
+			} catch (NumberFormatException e) {
+				System.out.println(args[2] + "的值必须为有效数字！");
+			}
+
+			if (args.length <= 3) {
+				return;
+			}
+			try {
+				String arg = args[3];
+				handleOtherParam(arg, 3, args);
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println(args[3] + "的值无效！");
+			} catch (NumberFormatException e) {
+				System.out.println(args[3] + "的值必须为有效数字！");
+			}
+			if (args.length < 4) {
+				return;
+			}
+
+			try {
+				String arg = args[4];
+				handleOtherParam(arg, 4, args);
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println(args[4] + "的值无效！");
+			} catch (NumberFormatException e) {
+				System.out.println(args[4] + "的值必须为有效数字！");
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}finally {
+			//记录文件
+			try {
+				File record=null;
+				if(recordFile==null) {
+					record=new File(getDstDir()+"\\FastCopy_temp_file.fastCopy");
+				}else {
+					record=new File(recordFile);
+				}
+				recordFile=record.getAbsolutePath();
+				if(record.exists()) {
+					isReadRecordFile=true;
+				}else {
+					record.createNewFile();
+				}
+			} catch (Exception e) {
+				isReadRecordFile=false;
+			}
+			configLoadFlag = true;
 		}
-		configLoadFlag = true;
+		
 	}
 
 	private static void handleOtherParam(String argsName, int argsIndex, final String[] args) {
@@ -190,7 +231,7 @@ public class CopyConfig {
 		try {
 			String srcDir = CopyConfig.getSrcDir();
 			File src = new File(srcDir);
-			if (src.isDirectory() || src.canRead()) {
+			if (!src.isDirectory() || !src.canRead()) {
 				System.out.println("错误：源目录不是一个有效的文件夹路径。或源目录不可读！");
 			}
 
@@ -207,14 +248,10 @@ public class CopyConfig {
 			// 是否读取记录文件。断点续传的时候用
 			String recordFile = CopyConfig.getRecordFile();
 			File record = new File(recordFile);
-			if (record.exists()) {
-				CopyConfig.setReadRecordFile(true);
-			} else {
-				record.createNewFile();
-			}
+			
 			CopyConfig.fixedThreadPool = Executors.newFixedThreadPool(CopyConfig.getRUN_THREAD());
 			System.out.println("初始化成功！");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("初始化失败！");
 		}
 	}

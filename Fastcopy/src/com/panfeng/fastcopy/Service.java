@@ -7,7 +7,7 @@ public class Service {
 	
 	public static String getHelp() {
 		StringWriter wr=new StringWriter();
-		wr.write("用法：\nFastCopy src  dst [可选参数] ");
+		wr.write("用法：\njava -jar FastCopy src  dst [可选参数] ");
 		wr.write('\n');
 		wr.write(" (必须)src：源目录，必须是目录并可读");
 		wr.write('\n');
