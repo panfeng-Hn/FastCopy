@@ -1,18 +1,22 @@
 # FastCopy
 
-#### 介绍
+## 介绍
 快速复制一个目录下大量小文件到其他目录
 
-#### 软件架构
+## 软件架构
 复制的时候在目标目录建立一个临时文件夹。先将文件复制到临时文件夹中。当临时文件夹的文件数量大于
 一定数量的时候直接移动到目标目录中。复制的时候使用多线程复制。
 
+## 地址  
 
-#### 安装教程
+[Gitee](https://gitee.com/panfeng-Hn/FastCopy)  
+[Github](https://github.com/panfeng-Hn/FastCopy)
+
+## 安装教程
 
 直接将jar放到本地就好
 
-#### 使用说明
+## 使用说明
 
 ```
 java -jar FastCopy src  dst [可选参数]  
